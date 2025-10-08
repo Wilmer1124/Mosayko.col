@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mosayko — Plataforma demo</title>
+  <style>
+    :root{--accent:#50C2F0;--bg:#0b0f14;--card:#0f1720;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; margin:0; background:linear-gradient(180deg,#03060a 0%, #071622 100%); color:#e6eef6; -webkit-font-smoothing:antialiased}
+    header{position:fixed;top:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);z-index:60;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#2ec4ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#012;box-shadow:0 6px 18px rgba(80,194,240,0.08)}
+    nav{display:flex;align-items:center;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.active{color:white;background:rgba(255,255,255,0.02)}
+    .container{max-width:1200px;margin:100px auto 40px;padding:0 18px}
+    .grid{display:grid;gap:18px}
+    .grid.projects{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0.01));padding:12px;border-radius:12px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03)}
+    .thumb{height:140px;border-radius:8px;background-size:cover;background-position:center;margin-bottom:10px}
+    .meta{display:flex;align-items:center;gap:10px}
+    .avatar{width:40px;height:40px;border-radius:50%;background:#08202a;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+    .btn{background:var(--accent);padding:8px 12px;border-radius:8px;color:#012;border:none;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .search-row{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .input{background:#071226;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:#e6eef6;flex:1}
+    .layout{display:grid;grid-template-columns:1fr 300px;gap:18px}
+    footer{padding:22px;text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
+    .detail{display:flex;gap:18px}
+    .detail .left{flex:2}
+    .detail .right{flex:1}
+    .progress{height:12px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#2ec4ff)}
+    .stars{display:inline-flex;gap:6px}
+    .star{cursor:pointer;font-size:20px}
+    .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:12px}
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,0.7);display:flex;align-items:center;justify-content:center;z-index:80}
+    .modal .box{width:820px;max-width:95%;background:#071226;padding:18px;border-radius:10px}
+    label{display:block;margin-bottom:6px;color:var(--muted);font-size:13px}
+    input[type=number],input[type=text],input[type=email],input[type=password],textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#061025;color:#e6eef6}
+    .small{font-size:13px;color:var(--muted)}
+    .tools-filters{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+    .resource-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+    .banner{height:160px;border-radius:10px;background-size:cover;background-position:center;margin-bottom:12px}
+    /* Transiciones suaves para todos los elementos interactivos */
+.btn, .ghost, .card, nav a, .star, .resource-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effects mejorados */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(80, 194, 240, 0.3);
+}
+
+.ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación de aparición para las cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Delay escalonado para grids */
+.grid.projects .card:nth-child(1) { animation-delay: 0.1s; }
+.grid.projects .card:nth-child(2) { animation-delay: 0.2s; }
+.grid.projects .card:nth-child(3) { animation-delay: 0.3s; }
+.grid.projects .card:nth-child(4) { animation-delay: 0.4s; }
+.grid.projects .card:nth-child(5) { animation-delay: 0.5s; }
+.grid.projects .card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Animación para el modal */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal .box {
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Animación de la barra de progreso */
+.progress > i {
+  transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Efecto shimmer para loading */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.loading {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(to right, #0f1720 4%, #1a2332 25%, #0f1720 36%);
+  background-size: 1000px 100%;
+}
+
+/* Hover para thumbnails */
+.thumb {
+  transition: transform 0.4s ease, filter 0.4s ease;
+  overflow: hidden;
+}
+
+.thumb:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Animación para las estrellas */
+.star {
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.star:hover {
+  transform: scale(1.3) rotate(10deg);
+  color: #ffd700;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+/* Efecto de pulso para botones importantes */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.btn.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Animación para inputs al enfocar */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(80, 194, 240, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Efecto parallax para banner */
+.banner {
+  transition: transform 0.3s ease;
+}
+
+.banner:hover {
+  transform: scale(1.02);
+}
+
+/* Animación de typing para placeholder */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Skeleton loading para cards vacías */
+.skeleton {
+  background: linear-gradient(90deg, #0f1720 25%, #1a2332 50%, #0f1720 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Bounce para notificaciones */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+.notification {
+  animation: bounce 1s;
+}
+
+/* Slide in para menú móvil */
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Glow effect para logo */
+.logo {
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  box-shadow: 0 6px 25px rgba(80, 194, 240, 0.4);
+  transform: rotate(5deg) scale(1.1);
+}
+
+/* Ripple effect para botones */
+.btn, .ghost {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after, .ghost::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::after, .ghost:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Flip para avatar */
+.avatar {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.avatar:hover {
+  transform: rotateY(180deg);
+}
+
+/* Shake para errores */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.error {
+  animation: shake 0.5s;
+}
+
+/* Gradient animation para fondos */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  background-size: 200% 200%;
+  animation: gradientMove 15s ease infinite;
+}
+.logo-img {
+  width: 120px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.detail{flex-direction:column}.banner{height:120px}}
+  
+/* Rating styles added */
+.stars{display:inline-flex;gap:6px}
+.star{cursor:pointer;font-size:20px;transition:all 0.2s;color:#444;user-select:none}
+.star:hover{transform:scale(1.3);color:#ffd700;text-shadow:0 0 10px #ffd700}
+.star.filled{color:#ffd700}
+.rating-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);font-size:12px;color:#ffd700;font-weight:600}
+.featured-badge{display:inline-block;padding:4px 8px;border-radius:6px;background:linear-gradient(135deg,#f0a,#f5a);color:white;font-size:10px;font-weight:700;text-transform:uppercase}
+#moshii-welcome {
+  position: fixed;
+  bottom: 30px;
+  left: -400px; /* empieza fuera de pantalla */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(0,0,0,0.6);
+  padding: 15px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  z-index: 999;
+  animation: slideIn 1.5s ease forwards;
+}
+
+.moshii-img {
+  width: 120px;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.moshii-text {
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.4em;
+}
+
+@keyframes slideIn {
+  from { left: -400px; opacity: 0; }
+  to { left: 30px; opacity: 1; }
+}
+
+@keyframes wave {
+  0%,100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-10deg); }
+}
+#helper-tools {
+  position: fixed;
+  bottom: -100px;       /* 🔹 altura desde abajo, puedes ajustar */
+  left: -170px;         /* 🔹 lo pega al borde izquierdo */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.9);
+  padding: 12px 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 1200;      /* 🔹 asegura que quede por encima */
+  animation: fadeIn 1.2s ease forwards;
+}
+
+.helper-img {
+  width: 100px;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.helper-text {
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+  max-width: 180px;
+  line-height: 1.4em;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+</style>
+
+</head>
+<body>
+  <header>
+   <div class="brand">
+  <img src="D:\Proyecto Final\pagina versiones\Recurso 4wk.png" 
+  alt="MEK Logo" 
+       class="logo-img" 
+       onclick="nav('home')" 
+       style="cursor: pointer;">
+  <div>
+    <div style="font-weight:700">Mosayko</div>
+    <div style="font-size:12px;color:var(--muted)">Exposición • Colaboración • Financiamiento</div>
+  </div>
+</div>
+    <nav id="main-nav">
+      <a href="#home" onclick="nav('home')" id="nav-home">Inicio</a>
+      <a href="#tools" onclick="nav('tools')" id="nav-tools">Herramientas</a>
+      <a href="#portfolio" onclick="nav('portfolio')" id="nav-portfolio">Portafolio / Fotografía</a>
+      <a href="#profile" onclick="nav('misproyectos')" id="nav-profile">Perfil</a>
+      <a href="#terms" onclick="nav('terminos')" id="nav-terms">Términos y condiciones</a>
+      <span id="auth-area"></span>
+    </nav>
+  </header>
+<div id="moshii-welcome">
+  <img src="C:\Users\SENA\Downloads\Recurso 5wkad.png" alt="Moshii" class="moshii-img">
+  <div class="moshii-text">👋 Hola, yo soy <b>Moshii</b><br>Bienvenido a <b>Mosayko</b></div>
+</div>
+  <main class="container">
+    <div id="app"></div>
+  </main>
+
+  <footer>Demo — Mosayko. Plataforma de demostración: no procesa pagos reales. Todos los datos se almacenan localmente en tu navegador.</footer>
+
+  <script>
+    setTimeout(()=>{
+  const mw = document.getElementById("moshii-welcome");
+  if(mw){
+    mw.style.transition = "all 1s ease";
+    mw.style.opacity = "0";
+    mw.style.left = "-400px";
+    setTimeout(()=>mw.remove(),1000);
+  }
+},8000);
+  // Simple SPA demo with localStorage persistence
+  const DB_KEY = 'mosayko_full_demo_v1';
+  function now(){return Date.now();}
+
+  function seedData(){
+    const users=[
+      {id:'u1',name:'Ana López',email:'ana@demo.test',password:'demo',avatar:'A',banner:'https://plus.unsplash.com/premium_photo-1661284886711-4eaee4fa7771?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',contacts:{email:'ana@demo.test',twitter:'@ana',phone:'+123456789'}},
+      {id:'u2',name:'Diego Ruiz',email:'diego@demo.test',password:'demo',avatar:'D',banner:'https://placehold.co/1200x300?text=Banner+Diego',contacts:{email:'diego@demo.test',instagram:'@diego'}}
+    ];
+
+    // projects: ensure minimum counts for categories
+    const projects=[];
+    function mk(id,title,creator,goal,raised,category,imgs,desc,syn,ratings,published,createdOffset){
+      return {id, title, creatorId:creator, goal, raised, category, images:imgs, description:desc, synopsis:syn, ratings:ratings||[], published:published||false, createdAt:now() - (createdOffset||0)};
+    }
+    // Destacados (6)
+    for(let i=1;i<=6;i++) projects.push(mk('d'+i,'Destacado '+i,'u1',500 + i*100, Math.floor(Math.random()*400), 'Destacados', ['https://www.zbrushcentral.com/uploads/default/original/4X/3/8/e/38e94b3b614dc86561ac90560ff362f272c9ed57.jpeg'+i], 'Descripción del proyecto destacado '+i,'Sinopsis breve', [5,4,5], i*1000));
+    // Videos (4)
+    for(let i=1;i<=4;i++) projects.push(mk('v'+i,'Video '+i,'u2',800, Math.floor(Math.random()*800),'Videos',['https://placehold.co/800x450?text=Video+'+i],'Colección de video','Sinopsis video', [4,5], false, i*2000));
+    // Animaciones (8)
+    for(let i=1;i<=8;i++) projects.push(mk('a'+i,'Animación '+i,'u1',1200, Math.floor(Math.random()*1200),'Animaciones',['https://placehold.co/800x450?text=Animacion+'+i],'Animación en proceso','Sinopsis anim', [], false, i*4000));
+    // Arte digital (10)
+    for(let i=1;i<=10;i++) projects.push(mk('art'+i,'Arte Digital '+i,'u2',300, Math.floor(Math.random()*300),'Arte digital',['https://placehold.co/800x450?text=Arte+'+i],'Obra digital','Sinopsis arte', [5,5], true, i*6000));
+    // Portafolio / Fotografías (6)
+    for(let i=1;i<=6;i++) projects.push(mk('pht'+i,'Fotografía '+i,'u1',200, Math.floor(Math.random()*200),'Fotografía',['https://placehold.co/800x450?text=Foto+'+i],'Portafolio fotográfico','Sinopsis foto', [4,5], true, i*8000));
+
+    // Tools resources
+    const resources=[
+    
+      {id:'r1',name:'Pantalla verde 4K',type:'video',link:'https://placehold.co/600x400?text=Green+Screen'},
+      {id:'r2',name:'Efecto de sonido Boom',type:'audio',link:'file:///C:/Users/SENA/Downloads/descargas.html'},
+      {id:'r3',name:'Pack transiciones',type:'video',link:'https://example.com/transitions.zip'}
+    ];
+    return {users, projects, resources, currentUserId:null};
+  }
+
+  function loadDB(){
+    const raw = localStorage.getItem(DB_KEY);
+    if(raw) return JSON.parse(raw);
+    const seed = seedData();
+    localStorage.setItem(DB_KEY, JSON.stringify(seed));
+    return seed;
+  }
+  function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+  let db = loadDB();
+
+  // Utilities
+  function q(sel){return document.querySelector(sel)}
+  function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\'':'&#39;','"':'&quot;'}[m]||m)); }
+  function getUser(){ return db.users.find(u=>u.id===db.currentUserId); }
+
+  // Routing
+  let currentView='home';
+  function nav(view){ currentView=view; render(); highlightNav(); }
+  function highlightNav(){ document.querySelectorAll('#main-nav a').forEach(a=>a.classList.remove('active')); const map={'home':'nav-home','tools':'nav-tools','portfolio':'nav-portfolio','misproyectos':'nav-profile','terminos':'nav-terms'}; const id = map[currentView]; if(id) document.getElementById(id).classList.add('active'); }
+
+  // Render
+  function render(){
+    const app=q('#app');
+    if(currentView==='home') app.innerHTML = renderHome();
+    else if(currentView==='tools') app.innerHTML = renderTools();
+    else if(currentView==='portfolio') app.innerHTML = renderPortfolio();
+    else if(currentView==='terminos') app.innerHTML = renderTerms();
+    else if(currentView==='project') app.innerHTML = renderProjectView(window.__activeProjectId);
+    else if(currentView==='misproyectos') app.innerHTML = renderProfileView();
+    renderAuthArea();
+  }
+
+  function renderAuthArea(){
+    const area = q('#auth-area');
+    const user = getUser();
+    if(user){
+      area.innerHTML = `<span style="margin-right:12px;color:var(--muted)">Hola, ${escapeHtml(user.name)}</span><button class='ghost' onclick="logout()">Salir</button>`;
+    } else {
+      area.innerHTML = `<button class='ghost' onclick="openLogin()">Iniciar sesión</button><button class='btn' onclick="openRegister()" style="margin-left:8px">Registrarse</button>`;
+    }
+  }
+
+  // HOME: shows categories with required minimums
+  function renderHome(){
+    // Build sections
+    function sectionHtml(title, items){
+      return `<div class='card'><h3>${title}</h3><div style='height:10px'></div><div class='grid projects'>${items.map(p=>projectCardHtml(p)).join('')}</div></div>`;
+    }
+
+    
+const featured = db.projects
+  .filter(p => p.ratings && p.ratings.length >= 1)
+  .sort((a,b) => ( (b.ratings.reduce((x,y)=>x+y,0)/b.ratings.length) || 0 ) - ( (a.ratings.reduce((x,y)=>x+y,0)/a.ratings.length) || 0 ))
+  .slice(0,6);
+
+const cats = {
+  'Videos': db.projects.filter(p=>p.category==='Videos').slice(0,4),
+  'Animaciones en proceso': db.projects.filter(p=>p.category==='Animaciones').slice(0,8),
+  'Arte digital': db.projects.filter(p=>p.category==='Arte digital').slice(0,10),
+  'Portafolio / Fotografías': db.projects.filter(p=>p.category==='Fotografía').slice(0,6)
+};
+
+
+    return `
+      <div class='grid'>
+        <div class='card'>
+          <div style='display:flex;align-items:center;justify-content:space-between'>
+            <div>
+              <h2>Mosayko</h2>
+              <div class='small'>Exposición • Colaboración • Financiamiento</div>
+            </div>
+            <div style='display:flex;gap:8px'>
+              <input class='input' id='search-main' placeholder='Buscar proyectos, autores...' oninput='filterHome()'>
+              <button class='btn' onclick='openCreateProject()'>+ Nuevo proyecto</button>
+            </div>
+          </div>
+        </div>
+        ${featured.length>0?`<div class='card'><h3>⭐ Destacados</h3><div class='small'>Proyectos con las mejores valoraciones</div><div style='height:10px'></div><div class='grid projects'>${featured.map(p=>projectCardHtml(p)).join('')}</div></div>`:`<div class='card'><h3>⭐ Destacados</h3><div class='small'>Aún no hay proyectos destacados</div></div>`}
+        ${Object.keys(cats).map(k=>sectionHtml(k,cats[k])).join('')}
+      </div>
+    `;
+  }
+
+  
+function projectCardHtml(p){
+    const creator = db.users.find(u=>u.id===p.creatorId) || {name:'Anon',avatar:'?'};
+    const percent = Math.min(100, Math.round(p.raised / p.goal * 100));
+    const closed = p.raised >= p.goal;
+    const user = getUser();
+    const avg = getAvgRating(p);
+    const votes = p.ratings ? p.ratings.length : 0;
+    const isFeatured = qualifiesForFeatured(p);
+
+    return `
+      <div class='card' style='min-height:260px'>
+        ${isFeatured?`<div style='margin-bottom:8px'><span class='featured-badge'>Destacado</span></div>`:''}
+        <div style="display:flex;gap:8px;overflow-x:auto">
+  ${p.images.map(img=>`
+    <div class='thumb' style="background-image:url('${img}');min-width:200px"></div>
+  `).join('')}
+</div>
+        <div style='font-weight:700'>${escapeHtml(p.title)}</div>
+        <div class='small'>${escapeHtml(p.synopsis||'')}</div>
+        <div style='margin-top:6px' class='rating-row'>
+          <div class='rating-badge'>★ ${avg.toFixed(1)} (${votes})</div>
+          <div style='margin-left:10px'>${renderStarsInline(p.id)}</div>
+        </div>
+        <div style='margin-top:8px' class='meta'>
+          <div style='flex:1'><div class='small'>Por <strong>${escapeHtml(creator.name)}</strong></div><div class='small'>Recaudado $${p.raised} / $${p.goal}</div></div>
+          <div>
+            <button class='btn' onclick='openProject("${p.id}")'>Ver</button>
+            ${user && user.id === p.creatorId ? `
+            <button class='ghost' onclick='openEditProject("${p.id}")'>Editar</button>
+            <button class='ghost' onclick='deleteProject("${p.id}")'>Eliminar</button>
+          ` : ''}
+          </div>
+        </div>
+        <div style='margin-top:8px' class='progress'><i style='width:${percent}%'></i></div>
+        <div style='margin-top:6px'><span class='pill'>${closed ? 'Cerrado' : percent + '%'}</span></div>
+      </div>
+    `;
+  }
+
+  function submitNewProject(){
+    const user = getUser();
+    if(!user) return alert("Debes iniciar sesión.");
+    const fileInput = q('#np-file');
+    const file = fileInput ? fileInput.files[0] : null;
+    const url = q('#np-url') ? q('#np-url').value.trim() : '';
+
+    function saveImage(imgSrc){
+      db.projects.push({
+        id: genId(),
+        title: q('#np-title').value,
+        synopsis: q('#np-syn').value,
+        description: q('#np-desc').value,
+        goal: Number(q('#np-goal').value),
+        raised: 0,
+        category: q('#np-cat').value,
+        images: [imgSrc],
+        creatorId: user.id,
+        ratings: [],
+        published: false,
+        createdAt: now()
+      });
+      saveDB(db);
+      closeModal();
+      render();
+    }
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => saveImage(e.target.result);
+      reader.readAsDataURL(file);
+    } else if (url) {
+      saveImage(url);
+    } else {
+      alert("Debes subir una imagen o poner una URL.");
+    }
+  }
+
+  // --- EDITAR PERFIL ---
+  function editProfileModal(){
+    const u = getUser();
+    return `
+      <div class='modal'><div class='box card'>
+        <h3>Editar perfil</h3>
+        <label>Nombre</label><input id='pr-name' value='${u.name}'>
+        <label>Email</label><input id='pr-email' value='${u.email}'>
+        <label>Banner (URL o subir)</label>
+        <input id='pr-banner-url' value='${u.banner||''}' placeholder='URL del banner'>
+        <input type='file' id='pr-banner-file'>
+        <label>Avatar (inicial o URL)</label>
+        <input id='pr-avatar-url' value='${u.avatar||''}' placeholder='URL o letra'>
+        <input type='file' id='pr-avatar-file'>
+        <div style='margin-top:10px;text-align:right'>
+          <button class='btn' onclick='saveProfileEdits()'>Guardar</button>
+          <button class='ghost' onclick='closeModal()'>Cancelar</button>
+        </div>
+      </div></div>
+    `;
+  }
+
+  function saveProfileEdits(){
+    const u = getUser();
+    u.name = q('#pr-name').value;
+    u.email = q('#pr-email').value;
+    u.contacts = {
+      email: q('#pr-contact-email').value,
+      twitter: q('#pr-contact-social').value,
+      phone: q('#pr-contact-phone').value
+    };
+
+    // Banner
+    const bannerUrl = q('#pr-banner-url').value.trim();
+    const bannerFile = q('#pr-banner-file').files[0];
+
+    // Avatar
+    const avatarUrl = q('#pr-avatar-url').value.trim();
+    const avatarFile = q('#pr-avatar-file').files[0];
+
+    // Guardar imágenes (prioridad: archivo > url > letra)
+    function finish() {
+      saveDB(db);
+      closeModal();
+      render();
+    }
+
+    if (bannerFile) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        u.banner = e.target.result;
+        if (!avatarFile) finish();
+      };
+      reader.readAsDataURL(bannerFile);
+    } else {
+      u.banner = bannerUrl;
+    }
+
+    if (avatarFile) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        u.avatar = e.target.result;
+        finish();
+      };
+      reader.readAsDataURL(avatarFile);
+    } else {
+      u.avatar = avatarUrl || u.name[0].toUpperCase();
+      if (!bannerFile) finish();
+    }
+  }
+
+  // --- UTILS ---
+  function q(s){ return document.querySelector(s); }
+  function openModal(html){ document.body.insertAdjacentHTML("beforeend",html); }
+  function closeModal(){ q('.modal')?.remove(); }
+
+  // TODO: render(), auth, login, etc. (puedes mantener tu versión original)
+
+  render(); // inicial
+
+  function filterHome(){
+  const qv = q('#search-main').value.toLowerCase();
+  const results = db.projects.filter(p => 
+    (p.title + ' ' + p.description + ' ' + p.synopsis)
+      .toLowerCase()
+      .includes(qv)
+  );
+  const app = q('#app');
+  app.innerHTML = `
+    <div class='grid'>
+      <div class='card'>
+        <div style='display:flex;align-items:center;justify-content:space-between'>
+          <div>
+            <h2>Mosayko</h2>
+            <div class='small'>Exposición • Colaboración • Financiamiento</div>
+          </div>
+          <div style='display:flex;gap:8px'>
+            <input class='input' id='search-main' placeholder='Buscar proyectos, autores...' value="${escapeHtml(qv)}" oninput='filterHome()'>
+            <button class='btn' onclick='openCreateProject()'>+ Nuevo proyecto</button>
+          </div>
+        </div>
+      </div>
+      <div class='card'>
+        <h3>Resultados de búsqueda</h3>
+        <div class='grid projects'>${results.length ? results.map(p=>projectCardHtml(p)).join('') : '<div class="small">No se encontraron proyectos</div>'}</div>
+      </div>
+    </div>
+  `;
+  // Vuelve a enfocar el input y coloca el cursor al final
+  const input = q('#search-main');
+  if(input){
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+}
+
+  // PROJECT VIEW modal
+  function openProject(id){ window.__activeProjectId = id; openModal(renderProjectModal(id)); }
+  function renderProjectModal(id){
+    const p = db.projects.find(x=>x.id===id); if(!p) return `<div class='modal'><div class='box card'>Proyecto no encontrado</div></div>`;
+    const creator = db.users.find(u=>u.id===p.creatorId) || {name:'Anon'};
+    const percent = Math.min(100, Math.round(p.raised / p.goal * 100));
+    const avg = p.ratings && p.ratings.length? (p.ratings.reduce((a,b)=>a+b,0)/p.ratings.length).toFixed(1):'—';
+    const closed = p.raised >= p.goal;
+    return `
+      <div class='modal' id='modal'>
+        <div class='box card'>
+          <div style='display:flex;gap:12px;align-items:center'>
+            <div style='display:flex;flex-direction:column;gap:8px;flex:1'>
+              <div style='display:flex;align-items:center;gap:12px'>
+                <div class='avatar'>${escapeHtml((creator.avatar)||creator.name[0]||'U')}</div>
+                <div>
+                  <div style='font-weight:700'>${escapeHtml(p.title)}</div>
+                  <div class='small'>Por <strong>${escapeHtml(creator.name)}</strong></div>
+                </div>
+                <div style='margin-left:auto'><span class='pill'>${closed? 'Cerrado' : percent + '%'}</span></div>
+              </div>
+              <div class='banner' style="background-image:url('${p.images[0]}')"></div>
+            </div>
+            <div style='width:320px'>
+              <div class='small'>Meta</div><div style='font-weight:700'>$${p.goal}</div>
+              <div class='small'>Recaudado</div><div style='font-weight:700'>$${p.raised}</div>
+              <div style='height:8px'></div>
+              <div class='progress'><i style='width:${percent}%'></i></div>
+              <div style='height:12px'></div>
+              <button class='btn' ${closed? 'disabled' : ''} onclick='startContribution("${p.id}")'>Contribuir (PayPal demo)</button>
+              <div style='height:12px'></div>
+              <div class='small'>Valoración: ${avg} (${p.ratings.length||0})</div>
+              <div style='margin-top:6px'>${renderStarsInline(p.id)}</div>
+            </div>
+          </div>
+
+          <div style='margin-top:12px'>
+            <h4>Sinopsis</h4>
+            <div class='small'>${escapeHtml(p.synopsis)}</div>
+            <div style='height:8px'></div>
+            <h4>Descripción</h4>
+            <div class='small'>${escapeHtml(p.description)}</div>
+            <div style='height:10px'></div>
+            <h4>Avances / Imágenes</h4>
+            <div style='display:flex;gap:8px;overflow:auto'>${p.images.map((img,i)=>`<img src='${img}' style='height:96px;border-radius:8px;cursor:pointer' onclick='openImageLightboxByProjectId("${p.id}",${i})'/>`).join('')}</div>
+          </div>
+
+          <div style='height:12px;text-align:right'><button class='ghost' onclick='closeModal()'>Cerrar</button></div>
+        </div>
+      </div>
+    `;
+// Lightbox robusto: busca imágenes por id de proyecto y muestra galería navegable
+function openImageLightboxByProjectId(projectId, idx) {
+  const p = db.projects.find(x=>x.id===projectId);
+  if (!p || !p.images || !p.images.length) return;
+  let imgs = p.images;
+  let current = idx;
+  function render() {
+    let html = `
+      <div class='modal' id='img-lightbox' style="z-index:9999;background:rgba(0,0,0,0.85)">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
+          <div style='position:relative;max-width:90vw;max-height:80vh;'>
+            <img src='${escapeHtml(imgs[current])}' style='max-width:90vw;max-height:80vh;border-radius:12px;box-shadow:0 8px 32px #000b;display:block;'>
+            ${imgs.length>1?`<button onclick='prevLightboxImg()' style='position:absolute;left:-48px;top:50%;transform:translateY(-50%);background:#2196f3;color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:22px;cursor:pointer;box-shadow:0 2px 8px #0006;'><b>&lt;</b></button>`:''}
+            ${imgs.length>1?`<button onclick='nextLightboxImg()' style='position:absolute;right:-48px;top:50%;transform:translateY(-50%);background:#2196f3;color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:22px;cursor:pointer;box-shadow:0 2px 8px #0006;'><b>&gt;</b></button>`:''}
+          </div>
+          <div style='margin-top:12px;color:#e6eef6;font-size:15px'>Imagen ${current+1} de ${imgs.length}</div>
+          <button class='ghost' style='margin-top:18px' onclick='closeImageLightbox()'>Cerrar</button>
+        </div>
+      </div>
+    `;
+    const prev = document.getElementById('img-lightbox');
+    if(prev) prev.remove();
+    document.body.insertAdjacentHTML('beforeend', html);
+  }
+  window.prevLightboxImg = function(){ current = (current-1+imgs.length)%imgs.length; render(); };
+  window.nextLightboxImg = function(){ current = (current+1)%imgs.length; render(); };
+  window.closeImageLightbox = function(){ const m=document.getElementById('img-lightbox'); if(m) m.remove(); };
+  render();
+}
+  }
+function submitNewProject(){
+  const user = getUser();
+  if(!user) return alert("Debes iniciar sesión.");
+
+  const fileInput = q('#np-file');
+  const file = fileInput?.files[0];
+  const url = q('#np-url')?.value.trim();
+
+  // Cierra el modal inmediatamente (respuesta instantánea)
+  closeModal();
+
+  function saveProject(imgSrc){
+    db.projects.push({
+      id: genId(),
+      title: q('#np-title').value,
+      synopsis: q('#np-syn').value,
+      description: q('#np-desc').value,
+      goal: Number(q('#np-goal').value),
+      raised: 0,
+      category: q('#np-cat').value,
+      images: [imgSrc],
+      creatorId: user.id,
+      ratings: [],
+      published: false,
+      createdAt: now()
+    });
+    saveDB(db);
+    render();
+  }
+
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => saveProject(e.target.result);
+    reader.readAsDataURL(file);
+  } else if(url){
+    saveProject(url);
+  } else {
+    alert("Debes subir una imagen o poner una URL.");
+  }
+}
+  function renderStarsInline(projectId){ const p = db.projects.find(x=>x.id===projectId); const avg = p.ratings && p.ratings.length? Math.round(p.ratings.reduce((a,b)=>a+b,0)/p.ratings.length):0; let html=''; for(let i=1;i<=5;i++){ html += `<span class='star' onclick='rateProject("${projectId}",${i})'>${i<=avg? '★' : '☆'}</span>`;} return html; }
+
+  
+function getAvgRating(project){
+  if(!project.ratings||project.ratings.length===0) return 0;
+  return project.ratings.reduce((a,b)=>a+b,0)/project.ratings.length;
+}
+
+function qualifiesForFeatured(project, minRating=4.0, minVotes=3){
+  const avg = getAvgRating(project);
+  const votes = project.ratings ? project.ratings.length : 0;
+  return avg >= minRating && votes >= minVotes;
+}
+
+// Interactive stars rendering (alternative to renderStarsInline). Only used in some views.
+function renderStarsInteractive(projectId){
+  const p = db.projects.find(x=>x.id===projectId);
+  const avg = getAvgRating(p);
+  let html = '<div class="stars">';
+  for(let i=1;i<=5;i++){
+    html += `<span class="star ${i<=Math.round(avg) ? 'filled' : ''}" onclick='rateProject("${projectId}",${i})'>★</span>`;
+  }
+  html += '</div>';
+  return html;
+}
+function rateProject(projectId, value){ const p = db.projects.find(x=>x.id===projectId); p.ratings = p.ratings || []; p.ratings.push(Number(value)); saveDB(db); // rerender modal content if open
+    const modal = q('#modal'); if(modal){ modal.remove(); openModal(renderProjectModal(projectId)); } else render(); }
+
+  // CONTRIBUTIONS (demo)
+  function startContribution(projectId){ const user = getUser(); if(!user){ openLogin(); return; } const p = db.projects.find(x=>x.id===projectId); const amount = Number(prompt('Monto a contribuir (USD)', '25')); if(!amount || amount<=0) return; const payLink = `https://www.paypal.me/YOUR_PAYPAL/${amount}`; window.open(payLink, '_blank'); if(confirm('¿Confirmas que has realizado el pago de $'+amount+'? (Demo)')){ p.raised += amount; if(p.raised >= p.goal) p.published = true; saveDB(db); alert('Gracias — contribución aplicada (demo)'); closeModal(); render(); } }
+
+  // TOOLS (library)
+  function renderTools(){
+    return `
+      <div class='grid'>
+        <div class='card'>
+          <h3>Herramientas — Biblioteca colaborativa</h3>
+          <div class='tools-filters'>
+            <input class='input' id='tools-search' placeholder='Buscar recursos...' oninput='filterResources()'>
+            <select id='tools-filter' onchange='filterResources()'><option value='all'>Todos</option><option value='video'>Video</option><option value='audio'>Audio</option></select>
+            <button class='btn' onclick='openUploadResource()'>Subir archivo</button>
+          </div>
+          <div id='tools-list' style='display:grid;gap:8px'>${db.resources.map(r=>resourceCardHtml(r)).join('')}</div>
+        </div>
+      </div>
+      <div id="helper-tools">
+        <img src="Recurso 6wkad.png" class="helper-img">
+        <div class="helper-text">📂 Aquí puedes descargar tus recursos...</div>
+      </div>
+    `;
+  }
+
+  function resourceCardHtml(r){ return `<div class='resource-card'><div style='width:12px;height:12px;border-radius:4px;background:${r.type==='audio'? 'linear-gradient(90deg,#ffd166,#f9c74f)' : 'linear-gradient(90deg,#50C2F0,#2ec4ff)'}'></div><div style='flex:1'><div style='font-weight:700'>${escapeHtml(r.name)}</div><div class='small'>Tipo: ${r.type} • <a href='${r.link}' target='_blank' style='color:var(--accent)'>Abrir</a></div></div></div>`; }
+
+  function filterResources(){ const qv=q('#tools-search').value.toLowerCase(); const ft=q('#tools-filter').value; const list = db.resources.filter(r=> (r.name+ ' '+r.type).toLowerCase().includes(qv) && (ft==='all' || r.type===ft)); q('#tools-list').innerHTML = list.map(r=>resourceCardHtml(r)).join(''); }
+
+  function openUploadResource(){ openModal(uploadResourceModal()); }
+
+  function uploadResourceModal(){ return `
+    <div class='modal'><div class='box card'>
+      <h3>Subir recurso</h3>
+      <label>Nombre</label>
+      <input id='res-name'>
+      <label>Tipo</label>
+      <select id='res-type'><option value='video'>Video</option><option value='audio'>Audio</option></select>
+      <label>Enlace (URL) o carga de archivo</label>
+      <input id='res-link' placeholder='https://...'>
+      <div style='height:8px'></div>
+      <div style='text-align:right'><button class='btn' onclick='submitResource()'>Subir</button> <button class='ghost' onclick='closeModal()'>Cancelar</button></div>
+    </div></div>`; }
+
+  function submitResource(){ const name = q('#res-name').value.trim(); const type = q('#res-type').value; const link = q('#res-link').value.trim(); if(!name || !link) return alert('Nombre y enlace son requeridos'); const r = {id:'r'+Date.now(),name,type,link}; db.resources.push(r); saveDB(db); closeModal(); render(); }
+
+  // PORTFOLIO
+  function renderPortfolio(){ const photos = db.projects.filter(p=>p.category==='Fotografía'); return `
+    <div class='grid'>
+      <div class='card'><h3>Portafolio / Fotografía</h3><div class='small'>Colección de obras fotográficas y gráficas.</div></div>
+      <div class='grid projects'>${photos.map(p=>projectCardHtml(p)).join('')}</div>
+    </div>
+  `; }
+function submitNewProject(){
+  const fileInput = q('#np-file');
+  const file = fileInput.files[0];
+
+  // Elimina previsualización y barra previas si existen
+  let prev = q('#np-preview');
+  if(prev) prev.remove();
+  let bar = q('#np-progress');
+  if(bar) bar.remove();
+
+  // Crea contenedor de previsualización y barra
+  const container = fileInput.parentElement;
+  const preview = document.createElement('div');
+  preview.id = 'np-preview';
+  preview.style = 'margin:10px 0;text-align:center;';
+  const progressBar = document.createElement('div');
+  progressBar.id = 'np-progress';
+  progressBar.style = 'width:100%;height:8px;background:#222;border-radius:4px;overflow:hidden;margin-bottom:10px';
+  progressBar.innerHTML = '<div id="np-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#50C2F0,#2ec4ff);"></div>';
+  container.appendChild(preview);
+  container.appendChild(progressBar);
+
+  if(file){
+    const reader = new FileReader();
+    reader.onprogress = function(e){
+      if(e.lengthComputable){
+        const percent = Math.round((e.loaded/e.total)*100);
+        q('#np-bar').style.width = percent+'%';
+      }
+    };
+    reader.onloadstart = function(){
+      q('#np-bar').style.width = '0%';
+      preview.innerHTML = '<span style="color:#9aa4b2">Cargando previsualización...</span>';
+    };
+    reader.onload = function(e){
+      const dataUrl = e.target.result;
+      preview.innerHTML = `<img src="${dataUrl}" style="max-width:220px;max-height:140px;border-radius:8px;box-shadow:0 2px 8px #0003">`;
+      q('#np-bar').style.width = '100%';
+
+      db.projects.push({
+        id: genId(),
+        title: q('#np-title').value,
+        synopsis: q('#np-syn').value,
+        description: q('#np-desc').value,
+        goal: Number(q('#np-goal').value),
+        raised: 0,
+        category: q('#np-cat').value,
+        images: [dataUrl],
+        creatorId: currentUser,
+        status: 'Nuevo proyecto'
+      });
+
+      setTimeout(()=>{
+        saveDB(db);
+        closeModal();
+        render();
+      }, 600); // deja ver la previsualización un momento
+    };
+    reader.readAsDataURL(file);
+  }
+}
+  // PROFILE
+  function renderProfileView(){ 
+  const user = getUser(); 
+  if(!user) return `<div class='card'>Necesitas iniciar sesión. <button class='btn' onclick='openLogin()'>Iniciar sesión</button> <button class='ghost' onclick='openRegister()'>Registrarse</button></div>`;
+  const myProjects = db.projects.filter(p=>p.creatorId===user.id);
+  const inProcess = myProjects.filter(p=>p.raised < p.goal);
+  const finished = myProjects.filter(p=>p.raised >= p.goal);
+
+  // Mostrar avatar como imagen si es una URL/base64, o como letra si no
+  let avatarHtml = '';
+  if(user.avatar && (user.avatar.startsWith('http') || user.avatar.startsWith('data:image'))) {
+    avatarHtml = `<img src="${escapeHtml(user.avatar)}" class="avatar" style="width:80px;height:80px;object-fit:cover;border-radius:50%;">`;
+  } else {
+    avatarHtml = `<div class='avatar' style='width:80px;height:80px;font-size:20px'>${escapeHtml(user.avatar||user.name[0])}</div>`;
+  }
+
+  return `
+    <div class='grid'>
+      <div class='card'>
+        <div class='banner' style="background-image:url('${user.banner || 'https://placehold.co/1200x300?text=Banner'}')"></div>
+        <div style='display:flex;gap:12px;align-items:center'>
+          ${avatarHtml}
+          <div>
+            <div style='font-weight:700;font-size:18px'>${escapeHtml(user.name)}</div>
+            <div class='small'>${escapeHtml(user.email)}</div>
+            <div style='margin-top:8px'><button class='btn' onclick='openEditProfile()'>Editar perfil</button></div>
+          </div>
+          <div style='margin-left:auto'><button class='ghost' onclick='openCreateProject()'>+ Nuevo proyecto</button></div>
+        </div>
+      </div>
+
+      <div class='card'>
+        <h4>Proyectos en proceso</h4>
+        <div class='small'>Proyectos que aún no alcanzan la meta.</div>
+        <div style='height:8px'></div>
+        ${inProcess.length? inProcess.map(p=>projectCardHtml(p)).join('') : '<div class=\'small\'>No tienes proyectos en proceso.</div>'}
+      </div>
+
+      <div class='card'>
+        <h4>Proyectos finalizados</h4>
+        <div class='small'>Trabajos completados y publicados.</div>
+        <div style='height:8px'></div>
+        ${finished.length? finished.map(p=>projectCardHtml(p)).join('') : '<div class=\'small\'>No tienes proyectos finalizados.</div>'}
+      </div>
+
+      <div class='card'>
+        <h4>Contactos</h4>
+        <div class='small'>Correo: ${escapeHtml(user.contacts?.email||'')}</div>
+        <div class='small'>Twitter: ${escapeHtml(user.contacts?.twitter||'')}</div>
+        <div class='small'>Teléfono: ${escapeHtml(user.contacts?.phone||'')}</div>
+        <div style='height:8px'></div>
+        <button class='ghost' onclick='openEditProfile()'>Editar contactos</button>
+      </div>
+    </div>
+  `;
+  }
+
+  function openEditProfile() {
+    openModal(editProfileModal());
+  }
+
+  function editProfileModal() {
+    const u = getUser();
+    return `
+      <div class='modal'><div class='box card'>
+        <h3>Editar perfil</h3>
+        <label>Nombre</label><input id='pr-name' value='${escapeHtml(u.name)}'>
+        <label>Email</label><input id='pr-email' value='${escapeHtml(u.email)}'>
+        <label>Banner (URL)</label><input id='pr-banner-url' value='${escapeHtml(u.banner||'')}' placeholder='URL del banner'>
+        <input type="file" id="pr-banner-file" accept="image/*">
+        <label>Avatar (inicial, URL o imagen)</label>
+        <input id='pr-avatar-url' value='${escapeHtml(u.avatar||'')}' placeholder='URL o letra'>
+        <input type="file" id="pr-avatar-file" accept="image/*">
+        <label>Contacto - Email</label><input id='pr-contact-email' value='${escapeHtml(u.contacts?.email||'')}' />
+        <label>Contacto - Twitter/IG</label><input id='pr-contact-social' value='${escapeHtml(u.contacts?.twitter||u.contacts?.instagram||'')}' />
+        <label>Contacto - Teléfono</label><input id='pr-contact-phone' value='${escapeHtml(u.contacts?.phone||'')}' />
+        <div style='text-align:right;margin-top:8px'>
+          <button class='btn' onclick='submitEditProfile()'>Guardar</button>
+          <button class='ghost' onclick='closeModal()'>Cerrar</button>
+        </div>
+      </div></div>
+    `;
+  }
+
+  function submitEditProfile() {
+    const u = getUser();
+    u.name = q('#pr-name').value;
+    u.email = q('#pr-email').value;
+    u.contacts = {
+      email: q('#pr-contact-email').value,
+      twitter: q('#pr-contact-social').value,
+      phone: q('#pr-contact-phone').value
+    };
+
+    // Banner
+    const bannerUrl = q('#pr-banner-url').value.trim();
+    const bannerFile = q('#pr-banner-file').files[0];
+
+    // Avatar
+    const avatarUrl = q('#pr-avatar-url').value.trim();
+    const avatarFile = q('#pr-avatar-file').files[0];
+
+    // Guardar imágenes (prioridad: archivo > url > letra)
+    function finish() {
+      saveDB(db);
+      closeModal();
+      render();
+    }
+
+    let bannerReady = false;
+    let avatarReady = false;
+    function tryFinish() {
+      if ((bannerFile ? bannerReady : true) && (avatarFile ? avatarReady : true)) {
+        saveDB(db);
+        closeModal();
+        render();
+      }
+    }
+    if (bannerFile) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        u.banner = e.target.result;
+        bannerReady = true;
+        tryFinish();
+      };
+      reader.readAsDataURL(bannerFile);
+    } else {
+      u.banner = bannerUrl;
+      bannerReady = true;
+    }
+    if (avatarFile) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        u.avatar = e.target.result;
+        avatarReady = true;
+        tryFinish();
+      };
+      reader.readAsDataURL(avatarFile);
+    } else {
+      u.avatar = avatarUrl || u.name[0].toUpperCase();
+      avatarReady = true;
+    }
+    tryFinish();
+  }
+
+  // CREATE / EDIT PROJECT
+  function openCreateProject(){ const user=getUser(); if(!user){ openLogin(); return; } openModal(createProjectModal()); }
+  function createProjectModal(){ return `
+    <div class='modal'><div class='box card'>
+      <h3>Crear proyecto</h3>
+      <label>Nombre</label><input id='p-title'>
+      <label>Sinopsis</label>
+      <select id='p-syn'>
+        <option value='Cortometraje'>Cortometraje</option>
+        <option value='Largometraje'>Largometraje</option>
+        <option value='Animación 2D'>Animación 2D</option>
+        <option value='Animación 3D'>Animación 3D</option>
+        <option value='Videoarte'>Videoarte</option>
+        <option value='Documental'>Documental</option>
+        <option value='Videojuego'>Videojuego</option>
+        <option value='Instalación interactiva'>Instalación interactiva</option>
+        <option value='Realidad virtual'>Realidad virtual</option>
+        <option value='Realidad aumentada'>Realidad aumentada</option>
+        <option value='Fotografía artística'>Fotografía artística</option>
+        <option value='Arte generativo'>Arte generativo</option>
+        <option value='video'>video</option>
+        <option value='Arte'>Arte</option>
+      </select>
+      <label>Descripción</label><textarea id='p-desc'></textarea>
+      <label>Meta (USD)</label><input id='p-goal' type='number' value='500'>
+      <label>Categoría</label><select id='p-cat'><option>Destacados</option><option>Videos</option><option>Animaciones</option><option>Arte digital</option><option>Fotografía</option></select>
+  <label>Imágenes (URLs separadas por coma)</label><input id='p-img' placeholder='https://...' oninput="previewProjectImages()">
+  <label>O subir imágenes</label><input type="file" id="p-file" accept="image/*" multiple onchange="previewProjectImages()">
+  <div id="p-preview-carrusel" style="margin:10px 0;text-align:center;"></div>
+      <div style='text-align:right;margin-top:8px'><button class='btn' onclick='submitCreateProject()'>Crear</button> <button class='ghost' onclick='closeModal()'>Cancelar</button></div>
+    </div></div>`; }
+
+  function submitCreateProject(){
+    const user = getUser();
+    if(!user) return openLogin();
+
+    const title = q('#p-title').value.trim();
+    const syn = q('#p-syn').value.trim();
+    const desc = q('#p-desc').value.trim();
+    const goal = Number(q('#p-goal').value) || 0;
+    const cat = q('#p-cat').value;
+    const urlStr = q('#p-img').value.trim();
+    const urls = urlStr ? urlStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const files = q('#p-file').files;
+
+    if(!title || !goal){
+      alert('Título y meta son requeridos');
+      return;
+    }
+
+    // Recolectar imágenes (archivos + URLs)
+    let imgs = [];
+    let loaded = 0;
+
+    function saveProject(finalImgs){
+      const p = {
+        id: 'p' + Date.now(),
+        title,
+        synopsis: syn,
+        description: desc,
+        goal,
+        raised: 0,
+        category: cat,
+        images: finalImgs,
+        creatorId: user.id,
+        ratings: [],
+        published: false,
+        createdAt: now()
+      };
+      db.projects.push(p);
+      saveDB(db);
+      closeModal();
+      render(); // refresca toda la interfaz
+      alert('✅ Proyecto creado y guardado');
+    }
+
+    if(files && files.length > 0){
+      for(let i=0;i<files.length;i++){
+        const r = new FileReader();
+        r.onload = e => {
+          imgs.push(e.target.result);
+          loaded++;
+          if(loaded === files.length) saveProject(imgs.concat(urls));
+        };
+        r.readAsDataURL(files[i]);
+      }
+    } else if(urls.length > 0){
+      saveProject(urls);
+    } else {
+      alert("Debes subir al menos una imagen o poner una URL.");
+    }
+  }
+function submitCreateProject(){
+  const user = getUser();
+  if(!user) return openLogin();
+  const title = q('#p-title').value.trim();
+  const syn = q('#p-syn').value.trim();
+  const desc = q('#p-desc').value.trim();
+  const goal = Number(q('#p-goal').value)||0;
+  const cat = q('#p-cat').value;
+  const urlStr = q('#p-img').value.trim();
+  const urls = urlStr ? urlStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const files = q('#p-file').files;
+  if(!title||!goal) return alert('Título y meta son requeridos');
+
+  // Leer archivos y URLs, guardar y previsualizar
+  let imgs = [];
+  let loaded = 0;
+  if(files && files.length>0){
+    for(let i=0;i<files.length;i++){
+      const r = new FileReader();
+      r.onload = e => {
+        imgs[i] = e.target.result;
+        loaded++;
+        if(loaded===files.length){
+          // Guardar proyecto con todas las imágenes
+          saveProject(imgs.concat(urls));
+        }
+      };
+      r.readAsDataURL(files[i]);
+    }
+  } else if(urls.length>0){
+    saveProject(urls);
+  } else {
+    alert("Debes subir al menos una imagen o poner una URL.");
+  }
+
+  function saveProject(imgs){
+    const p={id:'p'+Date.now(),title,creatorId:user.id,goal,raised:0,category:cat,images:imgs,description:desc,synopsis:syn,ratings:[],published:false,createdAt:now()};
+    db.projects.push(p); saveDB(db); closeModal(); alert('Proyecto creado'); render();
+  }
+}
+
+// Previsualización de imágenes seleccionadas para crear proyecto
+function previewProjectImages(){
+  const files = q('#p-file').files;
+  const urlStr = q('#p-img').value.trim();
+  const urls = urlStr ? urlStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  let previews = [];
+  let loaded = 0;
+  if(files && files.length>0){
+    for(let i=0;i<files.length;i++){
+      const r = new FileReader();
+      r.onload = e => {
+        previews[i] = e.target.result;
+        loaded++;
+        if(loaded===files.length){
+          showCarrusel(previews.concat(urls));
+        }
+      };
+      r.readAsDataURL(files[i]);
+    }
+  } else if(urls.length>0){
+    showCarrusel(urls);
+  } else {
+    showCarrusel([]);
+  }
+}
+
+function showCarrusel(imgs){
+  const cont = q('#p-preview-carrusel');
+  if(!imgs || imgs.length===0){ cont.innerHTML = ''; return; }
+  let idx = 0;
+  function render(){
+    cont.innerHTML = `
+      <button onclick='prevImg()' style='margin-right:8px'>&lt;</button>
+      <img src='${escapeHtml(imgs[idx])}' style='max-width:220px;max-height:140px;border-radius:8px;box-shadow:0 2px 8px #0003;vertical-align:middle;'>
+      <button onclick='nextImg()' style='margin-left:8px'>&gt;</button>
+      <div style='margin-top:4px;font-size:12px;color:#9aa4b2'>Imagen ${idx+1} de ${imgs.length}</div>
+    `;
+  }
+  window.prevImg = function(){ idx = (idx-1+imgs.length)%imgs.length; render(); };
+  window.nextImg = function(){ idx = (idx+1)%imgs.length; render(); };
+  render();
+}
+
+  function openEditProject(id) {
+    const user = getUser();
+    if (!user) return openLogin();
+    const p = db.projects.find(x => x.id === id);
+    if (!p) return alert('Proyecto no encontrado');
+    if (p.creatorId !== user.id) return alert('Solo el creador puede editar');
+    openModal(editProjectModal(p));
+  }
+
+  function editProjectModal(p) {
+    return `
+      <div class='modal'><div class='box card'>
+        <h3>Editar proyecto</h3>
+        <label>Nombre</label><input id='e-title' value='${escapeHtml(p.title)}'>
+        <label>Sinopsis</label>
+        <select id='e-syn'>
+          <option value='Cortometraje' ${p.synopsis === 'Cortometraje' ? 'selected' : ''}>Cortometraje</option>
+          <option value='Largometraje' ${p.synopsis === 'Largometraje' ? 'selected' : ''}>Largometraje</option>
+          <option value='Animación 2D' ${p.synopsis === 'Animación 2D' ? 'selected' : ''}>Animación 2D</option>
+          <option value='Animación 3D' ${p.synopsis === 'Animación 3D' ? 'selected' : ''}>Animación 3D</option>
+          <option value='Videoarte' ${p.synopsis === 'Videoarte' ? 'selected' : ''}>Videoarte</option>
+          <option value='Documental' ${p.synopsis === 'Documental' ? 'selected' : ''}>Documental</option>
+          <option value='Videojuego' ${p.synopsis === 'Videojuego' ? 'selected' : ''}>Videojuego</option>
+          <option value='Instalación interactiva' ${p.synopsis === 'Instalación interactiva' ? 'selected' : ''}>Instalación interactiva</option>
+          <option value='Realidad virtual' ${p.synopsis === 'Realidad virtual' ? 'selected' : ''}>Realidad virtual</option>
+          <option value='Realidad aumentada' ${p.synopsis === 'Realidad aumentada' ? 'selected' : ''}>Realidad aumentada</option>
+          <option value='Fotografía artística' ${p.synopsis === 'Fotografía artística' ? 'selected' : ''}>Fotografía artística</option>
+          <option value='Arte generativo' ${p.synopsis === 'Arte generativo' ? 'selected' : ''}>Arte generativo</option>
+        </select>
+        <label>Descripción</label><textarea id='e-desc'>${escapeHtml(p.description)}</textarea>
+        <label>Meta (USD)</label><input id='e-goal' type='number' value='${p.goal}'>
+        <label>Estado</label>
+        <select id='e-state'>
+          <option value='inprocess' ${p.raised < p.goal ? 'selected' : ''}>En proceso</option>
+          <option value='published' ${p.raised >= p.goal ? 'selected' : ''}>Publicado</option>
+        </select>
+        <label>Imágenes actuales</label>
+        <div id="e-current" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          ${(p.images || []).map((img,i) => `
+            <div style="position:relative;display:inline-block">
+              <img src="${escapeHtml(img)}" style="height:60px;border-radius:6px;object-fit:cover">
+              <button onclick="removeProjectImage('${p.id}',${i})" 
+                      style="position:absolute;top:-6px;right:-6px;
+                             background:#f33;border:none;color:white;
+                             border-radius:50%;width:20px;height:20px;
+                             cursor:pointer;font-size:12px;">✕</button>
+            </div>
+          `).join('')}
+        </div>
+
+        <label>Nuevas imágenes (URLs separadas por coma o seleccionar archivos)</label>
+        <input id="e-imgs" placeholder="https://... , https://..." oninput="previewEditImages()">
+        <input type="file" id="e-files" accept="image/*" multiple onchange="previewEditImages()">
+        <div id="e-preview-carrusel" style="margin:10px 0;text-align:center;"></div>
+        <div style='text-align:right;margin-top:8px'>
+          <button class='btn' onclick='submitEditProject("${p.id}")'>Guardar</button>
+          <button class='ghost' onclick='closeModal()'>Cerrar</button>
+        </div>
+      </div></div>
+    `;
+  }
+
+  function submitEditProject(id) {
+    const p = db.projects.find(x => x.id === id);
+    p.title = q('#e-title').value;
+    p.synopsis = q('#e-syn').value;
+    p.description = q('#e-desc').value;
+    p.goal = Number(q('#e-goal').value) || p.goal;
+    const state = q('#e-state').value;
+    p.published = state === 'published';
+
+    // Nuevas URLs
+    let urlImgs = q('#e-imgs').value.split(',').map(s => s.trim()).filter(Boolean);
+    // Nuevos archivos
+    const files = q('#e-files').files;
+    if(files && files.length>0){
+      let loaded = 0;
+      let newImgs = [];
+      for(let i=0;i<files.length;i++){
+        const reader = new FileReader();
+        reader.onload = e => {
+          newImgs.push(e.target.result);
+          loaded++;
+          if(loaded===files.length){
+            p.images = (p.images || []).concat(urlImgs).concat(newImgs).filter(Boolean);
+            saveDB(db);
+            closeModal();
+            render();
+          }
+        };
+        reader.readAsDataURL(files[i]);
+      }
+    } else {
+      p.images = (p.images || []).concat(urlImgs).filter(Boolean);
+      saveDB(db);
+      closeModal();
+      render();
+    }
+// Previsualización de nuevas imágenes en edición de proyecto
+function previewEditImages(){
+  const files = q('#e-files').files;
+  const urlStr = q('#e-imgs').value.trim();
+  const urls = urlStr ? urlStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  let previews = [];
+  let loaded = 0;
+  if(files && files.length>0){
+    for(let i=0;i<files.length;i++){
+      const r = new FileReader();
+      r.onload = e => {
+        previews.push(e.target.result);
+        loaded++;
+        if(loaded===files.length){
+          showEditCarrusel(previews.concat(urls));
+        }
+      };
+      r.readAsDataURL(files[i]);
+    }
+  } else if(urls.length>0){
+    showEditCarrusel(urls);
+  } else {
+    showEditCarrusel([]);
+  }
+}
+
+function showEditCarrusel(imgs){
+  const cont = q('#e-preview-carrusel');
+  if(!imgs || imgs.length===0){ cont.innerHTML = ''; return; }
+  let idx = 0;
+  function render(){
+    cont.innerHTML = `
+      <button onclick='prevEditImg()' style='margin-right:8px'>&lt;</button>
+      <img src='${escapeHtml(imgs[idx])}' 
+           style='max-width:220px;max-height:140px;border-radius:8px;
+           box-shadow:0 2px 8px #0003;vertical-align:middle;'>
+      <button onclick='nextEditImg()' style='margin-left:8px'>&gt;</button>
+      <div style='margin-top:4px;font-size:12px;color:#9aa4b2'>
+        Imagen ${idx+1} de ${imgs.length}
+      </div>
+    `;
+  }
+  window.prevEditImg = function(){ idx = (idx-1+imgs.length)%imgs.length; render(); };
+  window.nextEditImg = function(){ idx = (idx+1)%imgs.length; render(); };
+  render();
+}
+
+// Eliminar imagen actual del proyecto en edición
+function removeProjectImage(projectId, idx){
+  const p = db.projects.find(x => x.id === projectId);
+  if(!p) return;
+  p.images.splice(idx,1);
+  saveDB(db);
+  // Re-render solo la sección de imágenes actuales, sin cerrar el modal completo
+  const currentDiv = document.getElementById('e-current');
+  if(currentDiv){
+    currentDiv.innerHTML = (p.images || []).map((img,i) => `
+      <div style="position:relative;display:inline-block">
+        <img src="${escapeHtml(img)}" style="height:60px;border-radius:6px;object-fit:cover">
+        <button onclick="removeProjectImage('${p.id}',${i})" 
+                style="position:absolute;top:-6px;right:-6px;background:#f33;border:none;color:white;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;">✕</button>
+      </div>
+    `).join('');
+  }
+}
+  }
+
+
+  // AUTH
+  function openLogin(){ openModal(loginModal()); }
+  function loginModal(){ return `
+    <div class='modal'><div class='box card'>
+      <h3>Iniciar sesión</h3>
+      <label>Email</label><input id='li-email' type='email'>
+      <label>Contraseña</label><input id='li-pass' type='password'>
+      <div style='text-align:right;margin-top:8px'><button class='btn' onclick='submitLogin()'>Entrar</button> <button class='ghost' onclick='closeModal()'>Cancelar</button></div>
+    </div></div>`; }
+
+  function submitLogin(){ const email=q('#li-email').value.trim(); const pass=q('#li-pass').value; const user = db.users.find(u=>u.email===email && u.password===pass); if(!user) return alert('Credenciales inválidas'); db.currentUserId = user.id; saveDB(db); closeModal(); render(); }
+
+  function openRegister(){ openModal(registerModal()); }
+  function registerModal(){ return `
+    <div class='modal'><div class='box card'>
+      <h3>Registrarse</h3>
+      <label>Nombre</label><input id='re-name'>
+      <label>Email</label><input id='re-email' type='email'>
+      <label>Contraseña</label><input id='re-pass' type='password'>
+      <label>Confirmar contraseña</label><input id='re-pass2' type='password'>
+      <div style='text-align:right;margin-top:8px'><button class='btn' onclick='submitRegister()'>Crear cuenta</button> <button class='ghost' onclick='closeModal()'>Cancelar</button></div>
+    </div></div>`; }
+
+  function submitRegister(){
+    const name = q('#re-name').value.trim();
+    const email = q('#re-email').value.trim();
+    const password = q('#re-pass').value.trim();
+    const password2 = q('#re-pass2').value.trim();
+
+    if(!name || !email || !password){
+      alert('Por favor completa todos los campos.');
+      return;
+    }
+    if(password !== password2){
+      alert('Las contraseñas no coinciden.');
+      return;
+    }
+    if(db.users.find(u => u.email === email)){
+      alert('⚠️ Ya existe un usuario con ese correo.');
+      return;
+    }
+
+    // Crear nuevo usuario
+    const newUser = {
+      id: 'u' + Date.now(),
+      name,
+      email,
+      password,
+      avatar: name[0].toUpperCase(),
+      banner: 'https://placehold.co/1200x300?text=Nuevo+Usuario',
+      contacts: { email }
+    };
+
+    db.users.push(newUser);
+
+    // 🔹 Guardar sesión actual
+    db.currentUserId = newUser.id;
+
+    // 🔹 Guardar en localStorage
+    saveDB(db);
+
+    alert(`✅ Bienvenido, ${name}. Tu cuenta fue creada correctamente.`);
+    closeModal();
+    render();
+  }
+
+  function logout(){ db.currentUserId = null; saveDB(db); render(); }
+
+  // TERMS
+  function renderTerms(){ return `<div class='card'><h3>Términos y condiciones</h3><div class='small'>Aquí se presentan las políticas de uso, propiedad intelectual, responsabilidades, funcionamiento del financiamiento colaborativo y garantías del servicio. Este es un demo: revisa los textos legales reales antes de lanzar un servicio al público.</div></div>`; }
+
+  // MODAL helpers
+  function openModal(html){ closeModal(); const div=document.createElement('div'); div.innerHTML = html; document.body.appendChild(div.firstElementChild); }
+  function closeModal(){ const m = q('.modal'); if(m) m.remove(); }
+
+  // Initial
+  render(); highlightNav();
+
+  // expose some functions globally for inline handlers
+  window.nav = nav; window.openLogin = openLogin; window.openRegister = openRegister; window.openCreateProject = openCreateProject; window.openProject = openProject; window.openEditProject = openEditProject; window.openEditProfile = openEditProfile; window.openUploadResource = openUploadResource; window.openModal = openModal; window.closeModal = closeModal; window.submitCreateProject = submitCreateProject; window.submitEditProject = submitEditProject; window.filterResources = filterResources; window.filterHome = filterHome; window.startContribution = startContribution; window.rateProject = rateProject;
+window.deleteProject = deleteProject;
+function deleteProject(projectId) {
+  if (!confirm('¿Seguro que deseas eliminar este proyecto? Esta acción no se puede deshacer.')) return;
+  db.projects = db.projects.filter(p => p.id !== projectId);
+  saveDB(db);
+  render();
+}
+</script>
+</body>
+</html>
